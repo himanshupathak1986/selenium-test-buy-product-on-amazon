@@ -9,6 +9,7 @@ class search_results_page(base_page):
     SEARCH_RESULTS = (By.CSS_SELECTOR, 'div[data-component-type="s-search-result"]')
     PRODUCT_TITLE_LINK = (By.CSS_SELECTOR, "h2 a")
     PRODUCT_PRICE = (By.CSS_SELECTOR, ".a-price .a-offscreen")
+    #PRODUCT_PRICE = (By.CSS_SELECTOR, ".a-offscreen")
     # .a-box-group .a-price-whole
     ADD_TO_CART_BUTTON_ID = "add-to-cart-button"
     ADD_TO_CART_BUTTON = (By.ID, ADD_TO_CART_BUTTON_ID)
@@ -23,9 +24,9 @@ class search_results_page(base_page):
         if len(results) < 3:
             raise AssertionError(f"Expected at least 3 search results, but found {len(results)}")
 
-        print(f"Total search results found: {len(results)}")    
+        print(f"DEBUG:: Total search results found: {len(results)}")    
         if len(results) >= 3:
-            print("printing third item details for debugging:")
+            print("DEBUG:: printing third item details for debugging:")
             # print(f"Third item is {results[2].text}")  # Debugging line to check the third item
         else:
             raise AssertionError("Less than 3 search results found, cannot select the third item.")
@@ -38,11 +39,14 @@ class search_results_page(base_page):
     def get_product_price(self):
         price_elements = self.driver.find_elements(*self.PRODUCT_PRICE)
         price_text = price_elements[0].get_attribute("innerHTML") or price_elements[0].text
-        return float(price_text.replace('$', ''))  
+        #breakpoint()
+        print(f"DEBUG:: Extracted product price text: '{price_text}'")  # Debugging line to check the extracted price text
+        cleaned_price = re.sub(r'[^\d.]', '', price_text) # remove everything except numbers and the decimal point.
+        return float(cleaned_price)  
 
     def add_to_cart(self):
         add_cart_button = self.driver.find_element(*self.ADD_TO_CART_BUTTON)
-        print("Clicking 'Add to Cart' button...")  # Debugging line to confirm button is found
+        print("DEBUG:: licking 'Add to Cart' button...")  # Debugging line to confirm button is found
         add_cart_button.click()
         time.sleep(4) 
         #breakpoint()# Wait for potential offers to appear after adding to cart

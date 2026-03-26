@@ -8,8 +8,9 @@ class cart_page(base_page):
     CART_ICON = (By.ID, CART_ICON_ID)
     CART_PRICE = (By.CSS_SELECTOR, ".sc-product-price, .a-price .a-offscreen")
     CART_PRICE_ID = (By.ID, "sc-subtotal-amount-buybox")
+    CART_PRICE_CLASS = (By.CLASS_NAME, "a-price sw-subtotal-amount")
 
-    def no_thanks_to_offers(self):
+    def no_thanks_to_offers_by_clicking_x(self):
         try:
             no_thanks_buttons = self.driver.find_elements(By.ID, "attach-warranty-close-icon")
             if len(no_thanks_buttons) > 0:
@@ -24,10 +25,11 @@ class cart_page(base_page):
         self.wait_for_element_clickable(self.CART_ICON)
         cart_button = self.driver.find_element(By.ID, self.CART_ICON_ID)
         self.driver.execute_script("arguments[0].click();", cart_button)  
-        breakpoint()
+        #breakpoint()
         #self.click(self.CART_ICON)
 
     def get_cart_price(self):
-        cart_price_element = self.driver.find_element(*self.CART_PRICE_ID)
-        cart_price = cart_price_element.get_attribute("innerHTML") or cart_price_element.text
-        return float(cart_price.replace('$', ''))  
+        cart_price_elements = self.driver.find_elements(*self.CART_PRICE_CLASS)
+        cart_price = cart_price_elements[0].get_attribute("innerHTML") or cart_price_elements[0].text
+        cleaned_price = re.sub(r'[^\d.]', '', cart_price) # remove everything except numbers and the decimal point.
+        return float(cleaned_price)  
