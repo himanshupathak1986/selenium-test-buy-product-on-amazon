@@ -4,8 +4,10 @@ from pages.base_page import base_page
 
 
 class cart_page(base_page):
-    CART_ICON = (By.ID, "nav-cart")
+    CART_ICON_ID = "nav-cart"
+    CART_ICON = (By.ID, CART_ICON_ID)
     CART_PRICE = (By.CSS_SELECTOR, ".sc-product-price, .a-price .a-offscreen")
+    CART_PRICE_ID = (By.ID, "sc-subtotal-amount-buybox")
 
     def no_thanks_to_offers(self):
         try:
@@ -18,9 +20,14 @@ class cart_page(base_page):
             print(f"No 'No Thanks' button found or could not click: {e}")
 
     def go_to_cart(self):
-        self.click(self.CART_ICON)
+        #breakpoint()
+        self.wait_for_element_clickable(self.CART_ICON)
+        cart_button = self.driver.find_element(By.ID, self.CART_ICON_ID)
+        self.driver.execute_script("arguments[0].click();", cart_button)  
+        breakpoint()
+        #self.click(self.CART_ICON)
 
     def get_cart_price(self):
-        price_elements = self.driver.find_elements(*self.CART_PRICE)
-        price_text = price_elements[0].get_attribute("innerHTML") or price_elements[0].text
-        return float(price_text.replace('$', ''))  
+        cart_price_element = self.driver.find_element(*self.CART_PRICE_ID)
+        cart_price = cart_price_element.get_attribute("innerHTML") or cart_price_element.text
+        return float(cart_price.replace('$', ''))  
